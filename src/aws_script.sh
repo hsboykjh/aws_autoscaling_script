@@ -5,27 +5,27 @@ OLD_AUTO_SCALING_GROUP_NAME=$(aws autoscaling describe-auto-scaling-groups | gre
 echo "OLD_AUTO_SCALING_GROUP_NAME : "$OLD_AUTO_SCALING_GROUP_NAME
 
 # deploy server to make new AMI
-BUILD_INSTANCE=i-9d450f02
+BUILD_INSTANCE=i-12345678
 SERVER_SPEC=m3.large
 #api-lb-security-group
-SECURITY_GROUP=sg-0b4b1b6e
+SECURITY_GROUP=sg-0a1b2c3d4
 #ELB (elastic load balancer)name
-ELB_NAME=aim-api-lb
+ELB_NAME=elb-name
 #Server scaling number
 SERVER_MAX=4
 SERVER_MIN=2
 SERVER_DEFAULT=1
 
 #VPC ID
-VPC_ID=vpc-4a825d2f
-SUBNET_ID_1=subnet-5de14d2a
-SUBNET_ID_2=subnet-a5c107fc
+VPC_ID=vpc-a1b2c3d4
+SUBNET_ID_1=subnet-a1b2c3d4
+SUBNET_ID_2=subnet-a1b2c3d5
 # current Date and Time ( hour/min )
 DATE=$(date +%Y%m%d%H%M)
-echo $DATE
+echo "current Date : "$DATE
 
 # AMI naming : ex) api-server-prod-20160101
-NAME_PREFIX="api-server-prod"
+NAME_PREFIX="server-prod"
 NAME=$NAME_PREFIX-$DATE
 echo "new AMI name: "$NAME
 
