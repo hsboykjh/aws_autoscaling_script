@@ -54,11 +54,7 @@ sleep 180
 AUTO_SCALING_GROUP_NAME=$NAME-scaling-group
 aws autoscaling create-auto-scaling-group --auto-scaling-group-name $AUTO_SCALING_GROUP_NAME --launch-configuration-name $LAUNCH_CONFIGURATION_NAME --load-balancer-names $ELB_NAME --health-check-type ELB --health-check-grace-period 300 --max-size $SERVER_DEFAULT --min-size $SERVER_DEFAULT --desired-capacity $SERVER_DEFAULT --vpc-zone-identifier $SUBNET_ID_1,$SUBNET_ID_2
 
-
 echo "Create New Auto-Scaling-Group : $AUTO_SCALING_GROUP_NAME is created"
-
-# TEST create new autoscaling
-#aws autoscaling create-auto-scaling-group --auto-scaling-group-name sg-0b4b1b6e --launch-configuration-name api-server-prod-201607281139-launch-config --load-balancer-names aim-api-lb --health-check-type EC2 --health-check-grace-period 300 --max-size 1 --min-size 1 --desired-capacity 1 --vpc-zone-identifier subnet-5de14d2a,subnet-a5c107fc
 
 # check load balance health check ( instance )
 
@@ -74,11 +70,17 @@ sleep 10
 aws autoscaling update-auto-scaling-group --auto-scaling-group-name $OLD_AUTO_SCALING_GROUP_NAME --min-size 1 --max-size 1
 echo "$OLD_AUTO_SCALING_GROUP_NAME Server MIN: 1 , MAX 1 "
 
-sleep 300
+sleep 120
+
+# update old version autoscaling-group MAX =>0,  MIN => 0
+aws autoscaling update-auto-scaling-group --auto-scaling-group-name $OLD_AUTO_SCALING_GROUP_NAME --min-size 0 --max-size 0
+echo "$OLD_AUTO_SCALING_GROUP_NAME Server MIN: 0 , MAX 0 "
+
+sleep 120
 
 # deregister old version autoscaling group from load balancer =>  delete old version autoscaling group
 aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $OLD_AUTO_SCALING_GROUP_NAME
 echo "$OLD_AUTO_SCALING_GROUP_NAME deleted"
 
-aws autoscaling describe-auto-scaling-groups --query 'Reservations[*].Instances[*].[Placement.AvailabilityZone, State.Name, InstanceId]' --output text | grep ap-northeast-1 | grep running | awk '{print $3}'
-
+NEW_AUTO_SCALING_GROUP_NAME=$(aws autoscaling describe-auto-scaling-groups | grep scaling-group | grep api-server-prod | awk '{print $3}')
+echo "Current Auto Scaling Group : $NEW_AUTO_SCALING_GROUP_NAME"
